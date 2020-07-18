@@ -70,16 +70,17 @@ function back()
   imagedata_list.pop()
 }
 
+
 function getImage(id){
     
   //  canva=this.refs.mycanvas;
   //  ctx = canva.getContext("2d");
   //  ctx.drawImage(img,0,0)
-  var img=new Image()
-  console.log("hi",id)
-  //console.log(this.state.img_id,"hi")
-  img.src=img_list[1]
-  return img
+  // var img=new Image()
+  // console.log("hi",id)
+  // //console.log(this.state.img_id,"hi")
+  // img.src=img_list[id]
+  return img_list[id]
 }
 
 
@@ -98,13 +99,13 @@ class App extends React.Component {
     }
     
     this.state={
-      img_id:5,
+      img_id:0,
       img_a:600,
-      img:getImage(this.img_id)
+      img:getImage(0)
 
       }
 
-    console.log(this.state.img_id)
+    
 
   }
 
@@ -138,15 +139,35 @@ class App extends React.Component {
 
   }
 
+  skip(event)
+  {
+    this.state.img_id=1
+    this.state.img=getImage(1)
+    console.log(this.state)
+    this.load_img(52)
+  }
+
+  load_img(n)
+  { console.log("temp",n)
+    const img_id=this.state.img
+    const img=new Image();
+    
+    //const temp=new Image()
+    //ctx.drawImage(temp,0, 0,canvas.width,canvas.height) 
+    img.src=img_id 
+    img.onload= () =>{
+      console.log(img,"hi")
+      ctx.clearRect(0, 0,canvas.width,canvas.height)
+      ctx.drawImage(img,0, 0,canvas.width,canvas.height)
+    }
+     
+     
+  }
+
   componentDidMount() {
      canvas = this.refs.mycanvas
      ctx = canvas.getContext("2d")
-     const img=this.state.img
-    //console.log(this.state.img_id,"hi")
-     img.onload = () => {
-        ctx.drawImage(img,0, 0,canvas.width,canvas.height)
-      
-     }
+     this.load_img(15)
      window.addEventListener("mouseup",finishdraw)
      canvas.addEventListener("mousedown",startdraw)
     
@@ -161,6 +182,7 @@ class App extends React.Component {
 
   
   render(){
+    console.log("render",this.state)
     return (
     <div className="editor">
       <div className='Canvas'>
@@ -170,7 +192,7 @@ class App extends React.Component {
       <button onClick={()=>{this.set_tool('freehand')}}>Free Hand</button>
       <button onClick={()=>{this.set_tool('square')}}>Square</button>
       <button onClick={()=>{this.set_tool('point')}}>Point</button>
-      <button onClick={()=>{this.set_tool('freehand')}}>Skip</button>
+      <button onClick={()=>{this.skip()}}>Skip</button>
       <button onClick={()=>{this.set_tool('freehand')}}>Submit</button>
       <button onClick={()=>back()}>back</button>
 
