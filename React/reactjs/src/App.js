@@ -147,6 +147,18 @@ class App extends React.Component {
     this.load_img(52)
   }
 
+  submit()
+  {var image = canvas.toDataURL();  
+    var tmpLink = document.createElement( 'a' );  
+    tmpLink.download = 'image.png';
+    tmpLink.href = image; 
+    document.body.appendChild( tmpLink ); 
+    tmpLink.click(); 
+    document.body.removeChild( tmpLink );  
+    
+    this.skip()
+  }
+
   load_img(n)
   { console.log("temp",n)
     const img_id=this.state.img
@@ -193,7 +205,7 @@ class App extends React.Component {
       <button onClick={()=>{this.set_tool('square')}}>Square</button>
       <button onClick={()=>{this.set_tool('point')}}>Point</button>
       <button onClick={()=>{this.skip()}}>Skip</button>
-      <button onClick={()=>{this.set_tool('freehand')}}>Submit</button>
+      <button onClick={()=>{this.submit()}}>Submit</button>
       <button onClick={()=>back()}>back</button>
 
     </div>
