@@ -1,65 +1,92 @@
-
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.Editor{
+  background-color: red;
+  width: 100%;
+  margin: 0 auto;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  /* Small Devices, Tablets */
+  @media only screen and (min-width : 768px) {
+    width: 75%;
+    background-color: green;
   }
-  to {
-    transform: rotate(360deg);
+
+  /* Medium Devices, Desktops */
+  @media only screen and (min-width : 992px) {
+    width: 50%;
+    background-color: pink;
   }
-}
 
-Canvas{
-  
-  border: 1px solid gray;
-  
-    padding: 0;
-    margin: auto;
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
 
 }
-buttons {
-  background-color: #4CAF50; /* Green */
-  border: black;
-  color: white;
-  padding: 15px 32px;
-  text-align: bottom;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
+
+.header{
+background: #10466F ;
+width: 100%;
+padding: 5px;
+min-height: 35px;
+color: cyan;
+font-size: 30px;
+font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+opacity: 0.8;
+position: relative;
+
 }
 
+.logout
+{
+background-color: cyan;
+border-radius: 10px;
+padding: 8px 25px;
+font-size: 16px;
+white-space: nowrap;
+text-align: center;
+float: right;
+color: white;
+border: black;
+opacity: 0.95;
+margin-right: 10px;
+
+}
+
+.Canvas{
+margin: auto;
+border: 2px solid cyan;
+width: fit-content;
+bottom: 50px;
+
+}
+
+.Buttons {
+margin: auto;
+width: fit-content;
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 15px 32px;
+font-size: 16px;
+white-space: nowrap;
+text-align: center;
+border: black;
+color: white;
+border-radius: 8px;
+cursor: pointer;
+}
+
+
+.b1{background-color: teal; margin: 2px;}
+.b2{background-color: teal; margin: 2px;}
+.b3{background-color: teal; margin: 2px;}
+.b4{background-color: teal; margin: 2px;}
+.b5{background-color: rgb(16, 128, 81); margin: 2px;}
+.b6{background-color: teal; margin: 2px;}
+.b7{background-color: teal; margin: 2px;}
+.b8{background-color: teal; margin: 2px;}
+
+.Login{
+  background-color: cadetblue;
+  width: 200px;
+  height: 200;
+  position: center;
+  align-self: center;
+  align-items: center;
+}

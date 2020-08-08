@@ -7,19 +7,20 @@ var temp_img_id=0;
 var ctx,canvas
 var image_data
 var imagedata_list=[]
-var f=1
+var f=0
 var url
 let brush=false;
 var brushpos_start={x:"",y:""}
 var brushpos_end={x:"",y:""}
 var brushpos_move={x:"",y:""}
 var pic_square
+var load=1
 var annotate={
   "image_id" : "5236fda4-05cf-4a2f-ae1e-a94e6749e6cf",
-  "x_cor" : [1,2,3],
-  "y_cor" : [1,2,3],
-  "canvas_size" : [[0,0], [5,0], [0,5]],
-  "label" : "SUCCESS"
+  "x_cor" : [0,1,3,4],
+  "y_cor" : [0,1,3.5,4/187],
+  "canvas_size" : [[0,0], [3,0], [0,3]],
+  "label" : "abcde"
 }
 
 function get_cordinates(event)
@@ -96,21 +97,21 @@ function back()
 async function get_url(){
   const api_str='http://localhost:8000/image?id='+temp_img_id
   const a=await fetch(api_str)
-    
+   
   const j=await a.json()
-  console.log(j)
+  console.log("json=",j)
   const image_url=j.image_source
-  url=await 'http://localhost:8000'+ image_url
+  url= await'http://localhost:8000'+ image_url
+  console.log("async_url=",url)
 
+  return
 }
 
 
 function getImage(){
     
-     
-    //  get_url()
-
-     return img_list[temp_img_id]
+    get_url()
+    return url
   
   
 }
@@ -131,7 +132,7 @@ class App extends React.Component {
     }
     
     this.state={
-      f:1,
+      f:0,
       img_id:0,
       img_a:600,
       img:getImage()
@@ -267,7 +268,7 @@ class App extends React.Component {
     
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
      if(this.state.f==1){
      canvas = this.refs.mycanvas
      ctx = canvas.getContext("2d")
@@ -284,10 +285,33 @@ class App extends React.Component {
     
   }
 
-  submit2()
-  {
+  Login_Submit = (event) => {
+    event.preventDefault();
+    
+    
+    if(this.username.value=="manish" && this.password.value=="pass")
+    {
     this.setState({f:1})
     
+    }
+    else
+    {
+      alert("INCORRECT DETAILS");
+    }
+    document.getElementById("submit_annotation").reset();
+  }
+
+
+
+  mySubmitHandler = (event) => {
+    event.preventDefault();
+    alert("You are submitting " + this.input.value);
+    document.getElementById("submit_annotation").reset();
+  }
+
+  log_out()
+  {
+    this.setState({f:0})
   }
 
   
@@ -295,31 +319,65 @@ class App extends React.Component {
     if(this.state.f==1)
     {
     return (
-    <div className="editor">
+      <div className="editor">
+    
+      <div class ="header">
+        CROWD/\NN
+
+      <button class="logout" onClick={()=>{this.log_out()}}>Log Out </button>
+      </div>
+      <div className='Buttons'>
+      <button class="Buttons b1" onClick={()=>{this.set_tool('freehand')}}>Free Hand</button>
+      <button class="Buttons b2" onClick={()=>{this.set_tool('square')}}>Square</button>
+      <button class="Buttons b3" onClick={()=>{this.set_tool('point')}}>Point</button>
+      <button class="Buttons b6" onClick={()=>back()}>Undo</button>
+      <button class="Buttons b7" onClick={()=>this.ZoomIn()}>Zoom In</button>
+      <button class="Buttons b8" onClick={()=>this.ZoomOut()}>Zoom Out</button>
+      <button class="Buttons b4" onClick={()=>{this.skip()}}>Next</button>
+      <button class="Buttons b5"onClick={()=>{this.submit()}}>Save</button>
+      
+      </div>
+      <form onSubmit={this.mySubmitHandler} id="submit_annotation">
+        <input
+          type='text'
+          ref={(input) => this.input = input}
+          
+        />
+        <input
+          type='submit'
+        />
+      </form>
+      
       <div className='Canvas'>
         <canvas width={0} height={0} ref="mycanvas">My canvas</canvas>
-        
       </div>
-      <div className='Buttoos'>
-      <button onClick={()=>{this.set_tool('freehand')}}>Free Hand</button>
-      <button onClick={()=>{this.set_tool('square')}}>Square</button>
-      <button onClick={()=>{this.set_tool('point')}}>Point</button>
-      <button onClick={()=>{this.skip()}}>Skip</button>
-      <button onClick={()=>{this.submit()}}>Submit</button>
-      <button onClick={()=>back()}>back</button>
-      <button onClick={()=>this.ZoomIn()}>Zoom In</button>
-      <button onClick={()=>this.ZoomOut()}>Zoom Out</button>
     </div>
-    </div>
-  )}
+    
+    )
+  }
   else
   {
     return(
-      
-      <div className="login">
-        
-        <button onClick={()=>{this.submit2()}}>submit2</button>
-      </div>
+      <div className="Login">
+        <h1>Login</h1>
+        <form onSubmit={this.Login_Submit} id="submit_annotation">
+        <label>Username</label>
+        <input
+          type='text'
+          ref={(input) => this.username = input}
+          
+        />
+        <label>Password</label>
+        <input
+          type='password'
+          ref={(input) => this.password = input}
+          
+        />
+        <input
+          type='submit'
+        />
+      </form>
+    </div>
     )
   }
 
