@@ -2,26 +2,38 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-var img_list=["http://localhost:8000/images/roads.jpg/","http://localhost:8000/images/i3.png","http://i.imgur.com/c2wRzfD.jpg","roads.jpg", "logo512.png","i3.png","i4.png"]
+//var img_list=["http://localhost:8000/images/roads.jpg/","http://localhost:8000/images/i3.png","http://i.imgur.com/c2wRzfD.jpg","roads.jpg", "logo512.png","i3.png","i4.png"]
 var temp_img_id=0;
 var ctx,canvas
 var image_data
 var imagedata_list=[]
-var f=0
-var url
+var url="welcome.jpg"
 let brush=false;
+var sqr_start={x:"",y:""}
+var sqr_end={x:"",y:""}
 var brushpos_start={x:"",y:""}
 var brushpos_end={x:"",y:""}
 var brushpos_move={x:"",y:""}
 var pic_square
-var load=1
+var loadedimg_id
+var freehand_x=[],freehand_y=[]
+var token
+var img_width,img_height
 var annotate={
-  "image_id" : "5236fda4-05cf-4a2f-ae1e-a94e6749e6cf",
-  "x_cor" : [0,1,3,4],
-  "y_cor" : [0,1,3.5,4/187],
-  "canvas_size" : [[0,0], [3,0], [0,3]],
-  "label" : "abcde"
+  "image_id" : "",
+  "x_cor" : [],
+  "y_cor" : [],
+  "email"  : "",
+  "label" : "",
+  "shape" : "",
+  "token" : ""
 }
+
+var User={
+  "email":"",
+  "password":""
+}
+
 
 function get_cordinates(event)
 {
@@ -36,6 +48,8 @@ function startdraw(event)
   pic_square=ctx.getImageData(0,0,canvas.width,canvas.height)
   brush=true;
   brushpos_start=get_cordinates(event)
+  console.log(brushpos_start)
+  sqr_start=brushpos_start
   image_data= canvas.toDataURL()
   imagedata_list.push(image_data)
 }
@@ -44,6 +58,7 @@ function finishdraw(event)
 { 
   brush=false;
   brushpos_end=get_cordinates(event)
+  console.log(brushpos_end)
   ctx.beginPath();
   //ctx.clearRect(0,0,600,600) 
 }
@@ -53,7 +68,8 @@ function freehand_draw()
   { console.log("Cord=",brushpos_move)
     ctx.drawWidth=5;
     ctx.lineCap="round"
-
+    freehand_x.push(chng_x(brushpos_move.x))
+    freehand_y.push(chng_y(brushpos_move.y))
     ctx.lineTo(brushpos_move.x,brushpos_move.y)
     ctx.stroke();
     ctx.fill();
@@ -68,6 +84,7 @@ function square_draw()
 {
   const width=brushpos_move.x-brushpos_start.x
   const height=brushpos_move.y-brushpos_start.y
+  sqr_end=brushpos_move
   ctx.putImageData(pic_square, 0, 0);
   ctx.save();
   ctx.fillStyle="rgba(255, 255, 255, 0.5)";
@@ -93,29 +110,41 @@ function back()
   imagedata_list.pop()
 }
 
+var tem_img=""
 
 async function get_url(){
-  const api_str='http://localhost:8000/image?id='+temp_img_id
+  const api_str='http://localhost:8000/image?id='+temp_img_id +'&' + 'token=' +token
   const a=await fetch(api_str)
    
   const j=await a.json()
   console.log("json=",j)
+  tem_img=j.image_id
   const image_url=j.image_source
   url= await'http://localhost:8000'+ image_url
   console.log("async_url=",url)
 
-  return
+  
 }
 
 
 function getImage(){
-    
+    loadedimg_id=tem_img
     get_url()
+    
     return url
-  
   
 }
 
+function chng_x(x)
+{
+    const chng_x= x+((img_width-canvas.width)*x)/canvas.width
+    return chng_x
+}
+function chng_y(y)
+{
+    const chng_y= y+((img_height-canvas.height)*y)/canvas.height
+    return chng_y
+}
 
 
 
@@ -135,7 +164,7 @@ class App extends React.Component {
       f:0,
       img_id:0,
       img_a:600,
-      img:getImage()
+      img:url,
 
       }
 
@@ -176,34 +205,23 @@ class App extends React.Component {
   skip(event)
   {
     this.state.img_id=1
-    temp_img_id=(temp_img_id+1)%6
+    temp_img_id=(temp_img_id+1)%7
     this.state.img=getImage()
     
     console.log("img=",this.state.img)
     this.load_img(52)
   }
 
-  submit()
-   { //var image = canvas.toDataURL();  
-  //   var tmpLink = document.createElement( 'a' );  
-  //   tmpLink.download = 'image.png';
-  //   tmpLink.href = image; 
-  //   document.body.appendChild( tmpLink ); 
-  //   tmpLink.click(); 
-  //   document.body.removeChild( tmpLink );  
-    //const t=fetch('http://localhost:8000/annotation/save',{method : 'POST'})
-    fetch("http://localhost:8000/annotation/save",
-{
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify(annotate)
-})
-.then(function(res){ console.log(res) })
-.catch(function(res){ console.log(res) })
-    this.skip()
+  download()
+  { var image = canvas.toDataURL();  
+    var tmpLink = document.createElement( 'a' );  
+    tmpLink.download = 'image.png';
+    tmpLink.href = image; 
+    document.body.appendChild( tmpLink ); 
+    tmpLink.click(); 
+    document.body.removeChild( tmpLink );  
+    
+
   }
 
   ZoomIn()
@@ -254,25 +272,69 @@ class App extends React.Component {
     console.log("load=",img_id)
     img.onload= () =>{
       
+      img_height=img.height
+      img_width=img.width
       
-      canvas.width=img.width
-      canvas.height=img.height
+      canvas.width=700
+      canvas.height=500
+      
       ctx.clearRect(0, 0,canvas.width,canvas.height)
-      ctx.drawImage(img,0, 0,img.width,img.height)
+      ctx.drawImage(img,0, 0,canvas.width,canvas.height)
       image_data= canvas.toDataURL()
       imagedata_list.push(image_data) 
+      console.log(img_height,img_width,canvas.height,canvas.width)
     }
     
     img.src=img_id
     img.crossOrigin='Anonymous'
     
   }
+  mySubmitHandler = (event) => {
+    event.preventDefault();
+    if(this.tool.square)
+    {
+      annotate.x_cor =[chng_x(sqr_start.x),chng_x(sqr_end.x)]
+      annotate.y_cor =[chng_y(sqr_start.y),chng_y(sqr_end.y)]
+      annotate.shape="square"
+    }
+    else
+    {
+      annotate.x_cor=freehand_x
+      annotate.y_cor=freehand_y
+      freehand_y=[]
+      freehand_x=[]
+      annotate.shape="Freehand"
+    }
+    annotate.image_id=loadedimg_id
+    annotate.label=this.input.value
+    annotate.token=token
+    
+    alert("You have submitted " + this.input.value);
+    fetch("http://localhost:8000/annotation/save",
+    {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(annotate)
+    })
+    .then(function(res){ 
+      //alert("You Have Submitted " + this.input.value);
+      console.log(res)
+
+    })
+    .catch(function(res){ console.log(res) })
+        
+    document.getElementById("submit_annotation").reset();
+
+  }
 
   componentDidUpdate() {
      if(this.state.f==1){
      canvas = this.refs.mycanvas
      ctx = canvas.getContext("2d")
-     this.load_img()
+     this.skip()
      window.addEventListener("mouseup",finishdraw)
      canvas.addEventListener("mousedown",startdraw)
     
@@ -285,29 +347,37 @@ class App extends React.Component {
     
   }
 
-  Login_Submit = (event) => {
+  Login_Submit = async (event) => {
     event.preventDefault();
+    User.email=this.username.value
+    User.password=this.password.value
     
-    
-    if(this.username.value=="manish" && this.password.value=="pass")
+    const t=await fetch("http://localhost:8080/api/login/",
     {
-    this.setState({f:1})
-    
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(User)
+    })
+    const j=await t.json()
+    if(j["status code"]==200)
+    {
+      token=j.token
+      this.setState({f:1})
     }
     else
-    {
-      alert("INCORRECT DETAILS");
+    { token=""
+      alert("Invalid Username Password")
     }
+    
     document.getElementById("submit_annotation").reset();
   }
 
 
 
-  mySubmitHandler = (event) => {
-    event.preventDefault();
-    alert("You are submitting " + this.input.value);
-    document.getElementById("submit_annotation").reset();
-  }
+  
 
   log_out()
   {
@@ -318,6 +388,7 @@ class App extends React.Component {
   render(){
     if(this.state.f==1)
     {
+        
     return (
       <div className="editor">
     
@@ -337,14 +408,14 @@ class App extends React.Component {
       <button class="Buttons b5"onClick={()=>{this.submit()}}>Save</button>
       
       </div>
-      <form onSubmit={this.mySubmitHandler} id="submit_annotation">
+      <form onSubmit={this.mySubmitHandler} id="submit_annotation" class="annotation">
         <input
-          type='text'
+          type='text' class="labelbox"
           ref={(input) => this.input = input}
           
         />
         <input
-          type='submit'
+          type='submit' class="submit"
         />
       </form>
       
@@ -358,26 +429,33 @@ class App extends React.Component {
   else
   {
     return(
-      <div className="Login">
-        <h1>Login</h1>
+      <form method="post">
+      <div class ="header">
+        CROWD/\NN </div>
+      <div className="Login" align="center">
+       
+        <h1 class="log" >Login</h1>
         <form onSubmit={this.Login_Submit} id="submit_annotation">
-        <label>Username</label>
+        <label>Username </label>
         <input
-          type='text'
-          ref={(input) => this.username = input}
+          type='text' class="user" 
+          ref={(input) => this.username = input }
           
         />
-        <label>Password</label>
+        <br></br>
+        <label>Password .</label>
         <input
-          type='password'
+          type='password' class="pass"
           ref={(input) => this.password = input}
           
         />
+        <br></br>
         <input
-          type='submit'
+          type='submit' class="submit"
         />
       </form>
     </div>
+    </form>
     )
   }
 

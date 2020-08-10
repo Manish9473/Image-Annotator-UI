@@ -3,25 +3,11 @@
   width: 100%;
   margin: 0 auto;
   align-items: center;
-
-  /* Small Devices, Tablets */
-  @media only screen and (min-width : 768px) {
-    width: 75%;
-    background-color: green;
-  }
-
-  /* Medium Devices, Desktops */
-  @media only screen and (min-width : 992px) {
-    width: 50%;
-    background-color: pink;
-  }
-
-
 }
 
 .header{
 background: #10466F ;
-width: 100%;
+width: auto;
 padding: 5px;
 min-height: 35px;
 color: cyan;
@@ -52,7 +38,7 @@ margin-right: 10px;
 margin: auto;
 border: 2px solid cyan;
 width: fit-content;
-bottom: 50px;
+
 
 }
 
@@ -82,11 +68,48 @@ cursor: pointer;
 .b7{background-color: teal; margin: 2px;}
 .b8{background-color: teal; margin: 2px;}
 
+
+
+
 .Login{
-  background-color: cadetblue;
-  width: 200px;
-  height: 200;
-  position: center;
-  align-self: center;
-  align-items: center;
+  align: center;
+  opacity: 0.9;
+  margin: auto;
+  width: 50%;
+  height: 688px;
+  margin-bottom: 0px;
+  color: aliceblue;
+}
+
+.user{
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  width: 150px;
+  margin-bottom: 10px;;
+}
+
+.pass{
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  width: 150px;
+}
+
+.annotation{
+  margin: auto;
+  width: fit-content;
+  color: white;
+  margin-bottom: 10px;
+  font-size: 16px; 
+}
+
+.submit{
+  background-color: teal;
+  border-radius: 12px;
+  padding: 6px 16px;
+  font-size: 16px;
+  white-space: nowrap;
+  text-align: center;
+  color: white;
+  border: black;
+  opacity: 0.95;
+  margin-top: 10px;
+
 }
