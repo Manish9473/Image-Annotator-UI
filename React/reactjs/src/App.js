@@ -60,7 +60,7 @@ function finishdraw(event)
   brushpos_end=get_cordinates(event)
   console.log(brushpos_end)
   ctx.beginPath();
-  //ctx.clearRect(0,0,600,600) 
+  
 }
 
 function freehand_draw()
@@ -97,16 +97,12 @@ function back()
   
   const img_data=imagedata_list[imagedata_list.length-1]
   const t=new Image()
-    
-    
-    
-    
     t.onload= () =>{
       
       ctx.drawImage(t,0, 0,canvas.width,canvas.height)
     }
     
-    t.src=img_data
+  t.src=img_data
   imagedata_list.pop()
 }
 
@@ -205,14 +201,14 @@ class App extends React.Component {
   skip(event)
   {
     this.state.img_id=1
-    temp_img_id=(temp_img_id+1)%7
+    temp_img_id=(temp_img_id+1)%6
     this.state.img=getImage()
     
     console.log("img=",this.state.img)
     this.load_img(52)
   }
 
-  download()
+  submit()
   { var image = canvas.toDataURL();  
     var tmpLink = document.createElement( 'a' );  
     tmpLink.download = 'image.png';
@@ -290,7 +286,13 @@ class App extends React.Component {
     
   }
   mySubmitHandler = (event) => {
+
     event.preventDefault();
+    if(this.input.value==="")
+    {
+      alert("Please input some value");
+    }
+    else{
     if(this.tool.square)
     {
       annotate.x_cor =[chng_x(sqr_start.x),chng_x(sqr_end.x)]
@@ -325,7 +327,7 @@ class App extends React.Component {
 
     })
     .catch(function(res){ console.log(res) })
-        
+  }    
     document.getElementById("submit_annotation").reset();
 
   }
@@ -400,7 +402,7 @@ class App extends React.Component {
       <div className='Buttons'>
       <button class="Buttons b1" onClick={()=>{this.set_tool('freehand')}}>Free Hand</button>
       <button class="Buttons b2" onClick={()=>{this.set_tool('square')}}>Square</button>
-      <button class="Buttons b3" onClick={()=>{this.set_tool('point')}}>Point</button>
+      
       <button class="Buttons b6" onClick={()=>back()}>Undo</button>
       <button class="Buttons b7" onClick={()=>this.ZoomIn()}>Zoom In</button>
       <button class="Buttons b8" onClick={()=>this.ZoomOut()}>Zoom Out</button>
